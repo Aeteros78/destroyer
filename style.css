@@ -1,0 +1,114 @@
+:root {
+    --bg-color: #121212;
+    --panel-color: #1e1e1e;
+    --accent-color: #d4af37;
+    --text-color: #e0e0e0;
+    --btn-color: #333;
+    --btn-hover: #444;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+#game-container {
+    width: 100%;
+    max-width: 450px;
+    height: 100vh;
+    background: var(--panel-color);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-y: auto;
+}
+
+/* Статистика */
+.header-stats {
+    display: flex;
+    justify-content: space-around;
+    padding: 15px;
+    background: #000;
+    border-bottom: 2px solid var(--accent-color);
+    font-weight: bold;
+}
+
+/* Экраны */
+.screen {
+    display: none;
+    padding: 20px;
+    flex-grow: 1;
+    text-align: center;
+}
+
+.active { display: block; }
+
+/* Кнопки */
+.btn-main {
+    width: 90%;
+    margin: 10px auto;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    background: var(--btn-color);
+    color: white;
+    border: 1px solid var(--accent-color);
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.btn-main:hover { background: var(--btn-hover); }
+
+.btn-back {
+    padding: 10px 20px;
+    background: #555;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.spacer { height: 20px; }
+
+.nav-bottom {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+/* Магазин */
+.shop-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.shop-btn {
+    padding: 10px;
+    font-size: 14px;
+    background: #2c2c2c;
+    color: #fff;
+    border: 1px solid #555;
+    cursor: pointer;
+}
+
+/* Валюта */
+.currency-bar {
+    padding: 15px;
+    background: #000;
+    display: flex;
+    justify-content: space-around;
+    font-size: 14px;
+    border-top: 1px solid #333;
+}
+
+.gold { color: #ffd700; }
+.silver { color: #c0c0c0; }
+.diamond { color: #b9f2ff; }
+
+.link { color: var(--accent-color); cursor: pointer; text-decoration: underline; }

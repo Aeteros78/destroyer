@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Adventure</title>
+    <!-- Подключаем CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="game-container">
+    
+    <!-- ВЕРХНЯЯ ПАНЕЛЬ -->
+    <div class="header-stats">
+        <span>💪 Сила: <span id="val-str">1</span></span>
+        <span>❤️ Здоровье: <span id="val-hp">1</span></span>
+        <span>🛡️ Броня: <span id="val-arm">1</span></span>
+    </div>
+
+    <!-- ГЛАВНЫЙ ЭКРАН -->
+    <div id="screen-main" class="screen active">
+        <button class="btn-main" onclick="alert('Битва началась!')">⚔️ БИТВА С БОССАМИ</button>
+        <div class="spacer"></div>
+        <button class="btn-main" onclick="alert('Вы на Арене!')">🏟️ АРЕНА</button>
+        <div class="spacer"></div>
+        <button class="btn-main" onclick="showScreen('screen-quests')">📜 ЗАДАНИЯ</button>
+        <button class="btn-main" onclick="alert('Покупка золота...')">💰 КУПИТЬ ЗОЛОТО</button>
+        <div class="spacer"></div>
+        <button class="btn-main" onclick="showScreen('screen-shop')">🛒 МАГАЗИН</button>
+        <div class="spacer"></div>
+        <button class="btn-main" onclick="train()">🏋️ ТРЕНИРОВКА</button>
+        <div class="spacer"></div>
+        <div class="nav-bottom">
+            <button onclick="showScreen('screen-hero')">👤 Герой</button>
+            <button onclick="showScreen('screen-clan')">🛡️ Клан</button>
+            <button onclick="location.reload()">🏠 Главная</button>
+        </div>
+    </div>
+
+    <!-- ЭКРАН МАГАЗИНА -->
+    <div id="screen-shop" class="screen">
+        <h2>Магазин</h2>
+        <div class="shop-grid">
+            <button class="shop-btn" onclick="alert('Оракул')">🔮 Оракул</button>
+            <button class="shop-btn" onclick="alert('Ювелир')">💎 Ювелир</button>
+            <button class="shop-btn" onclick="alert('Лавка')">✨ Лавка</button>
+            <button class="shop-btn" onclick="alert('Снаряжение')">⚔️ Снаряжение</button>
+            <button class="shop-btn" onclick="alert('Амулеты')">📿 Амулеты</button>
+            <button class="shop-btn" onclick="alert('Руны')">📜 Руны</button>
+            <button class="shop-btn" onclick="alert('Кузнец')">🔨 Кузнец</button>
+            <button class="shop-btn" onclick="alert('Умения')">🔥 Умения</button>
+            <button class="shop-btn" onclick="alert('Премиум')">⭐ Премиум</button>
+            <button class="shop-btn" onclick="alert('Талисман')">🧿 Талисман</button>
+            <button class="shop-btn" onclick="alert('Мифрил')">⛏️ Мифрил</button>
+        </div>
+        <br>
+        <button class="btn-back" onclick="showScreen('screen-main')">Назад</button>
+    </div>
+
+    <!-- ЭКРАН ЗАДАНИЙ -->
+    <div id="screen-quests" class="screen">
+        <h2>Задания</h2>
+        <p>Заданий нет.</p>
+        <button class="btn-back" onclick="showScreen('screen-main')">Назад</button>
+    </div>
+
+    <!-- ЭКРАН ГЕРОЯ -->
+    <div id="screen-hero" class="screen">
+        <h2>Личный кабинет</h2>
+        <p class="link" onclick="showScreen('screen-clan')">Перейти в "Мой клан"</p>
+        <br>
+        <button class="btn-back" onclick="showScreen('screen-main')">Назад</button>
+    </div>
+
+    <!-- ЭКРАН КЛАНА -->
+    <div id="screen-clan" class="screen">
+        <h2>Ваш Клан</h2>
+        <p>Список участников пуст.</p>
+        <button class="btn-back" onclick="showScreen('screen-main')">Назад</button>
+    </div>
+
+    <!-- НИЖНЯЯ ПАНЕЛЬ (ВАЛЮТА) -->
+    <div class="currency-bar">
+        <span class="gold">🪙 <span id="val-gold">100</span></span>
+        <span class="silver">🥈 <span id="val-silver">50</span></span>
+        <span class="diamond">💎 <span id="val-diamond">5</span></span>
+    </div>
+
+</div>
+
+<!-- Подключаем JavaScript (в конце body, чтобы HTML загрузился первым) -->
+<script src="script.js"></script>
+</body>
+</html>
