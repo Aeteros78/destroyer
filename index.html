@@ -8,20 +8,53 @@
 </head>
 <body>
 
-<div id="game-container">
-    <div class="header-stats">
-        <span>💪 <span id="val-str">1</span></span>
-        <span>❤️ <span id="val-hp">1</span></span>
-        <span>🛡️ <span id="val-arm">1</span></span>
+<!-- ИГРОВОЙ ПОПАП ПОБЕДЫ -->
+    <div id="pop-victory" class="game-popup">
+        <div class="popup-content">
+            <h1 class="popup-title win">ПОБЕДА!</h1>
+            <p id="pop-win-text">Вы сокрушили врага!</p>
+            <div class="popup-rewards">
+                <p>💰 <span id="pop-gold">0</span></p>
+                <p>✨ <span id="pop-exp">0</span></p>
+            </div>
+            <button class="btn-main" onclick="closePopup()">Продолжить</button>
+        </div>
     </div>
 
+    <!-- ИГРОВОЙ ПОПАП ПОРАЖЕНИЯ -->
+    <div id="pop-defeat" class="game-popup">
+        <div class="popup-content">
+            <h1 class="popup-title lose">ПОРАЖЕНИЕ</h1>
+            <p id="pop-lose-text">Ваш путь прерван...</p>
+            <button class="btn-main" onclick="closePopup()">Вернуться</button>
+        </div>
+    </div>
+
+    <!-- ИГРОВОЙ ПОПАП ПОКИДАНИЯ (ВЫБОР) -->
+    <div id="pop-exit" class="game-popup">
+        <div class="popup-content">
+            <h1 class="popup-title" style="color: #f39c12;">ВЫХОД?</h1>
+            <p>Вы уверены, что хотите покинуть арену?</p>
+            <p style="font-size: 0.8em; color: #888; margin-bottom: 20px;">Прогресс текущей волны будет потерян!</p>
+            <div style="display: flex; gap: 10px; flex-direction: column;">
+                <button class="btn-main" onclick="confirmArenaExit()">Да, покинуть</button>
+                <button class="btn-main" style="background: #2ecc71; border-color: #2ecc71;" onclick="closePopup()">Нет, остаться</button>
+            </div>
+        </div>
+    </div>
+
+<div id="game-container">
+    <div class="header-stats">
+        <span>💪 <span id="val-str">0</span></span>
+        <span>❤️ <span id="val-hp">0</span></span>
+        <span>🛡️ <span id="val-arm">0</span></span>
+    </div>
+
+    <!-- ГЛАВНОЕ МЕНЮ -->
     <div id="screen-main" class="screen active">
         <button class="btn-main" onclick="startBattle()">⚔️ БИТВА С БОССАМИ</button>
         <div class="spacer"></div>
         <button class="btn-main" onclick="startArena()">🏟️ АРЕНА</button>
-        <div class="spacer"></div>
-        <button class="btn-main" onclick="showScreen('screen-quests')">📜 ЗАДАНИЯ</button>
-        <button class="btn-main" onclick="alert('Магазин скоро будет!')">💰 КУПИТЬ ЗОЛОТО</button>
         <div class="spacer"></div>
         <button class="btn-main" onclick="showScreen('screen-shop')">🛒 МАГАЗИН</button>
         <div class="spacer"></div>
@@ -29,11 +62,11 @@
         <div class="spacer"></div>
         <div class="nav-bottom">
             <button onclick="showScreen('screen-hero')">👤 Герой</button>
-            <button onclick="showScreen('screen-clan')">🛡️ Клан</button>
             <button onclick="resetGame()">🔄 Сброс</button>
         </div>
     </div>
 
+    <!-- ЭКРАН АРЕНЫ -->
     <div id="screen-arena" class="screen">
         <h2 id="arena-wave-text">Волна: 1/15</h2>
         <div class="battle-arena">
@@ -46,6 +79,7 @@
                 </div>
             </div>
             <button class="btn-attack" onclick="arenaAttack()">⚔️ АТАКОВАТЬ</button>
+            <button class="btn-fast-attack" onclick="arenaFastAttack()">⚡ 10 УДАРОВ</button>
             <div class="hero-side">
                 <div class="hero-info">
                     <p>💪 <span id="arena-h-str">0</span> | ❤️ <span id="arena-h-hp">0</span> | 🛡️ <span id="arena-h-arm">0</span></p>
@@ -58,12 +92,13 @@
         <button class="btn-back" onclick="exitArena()" style="margin-top:20px;">Покинуть Арену</button>
     </div>
 
+    <!-- ЭКРАН БОЯ (ГЛАВНЫЙ) -->
     <div id="screen-battle" class="screen">
         <h2 id="battle-location">Локация</h2>
         <h3 id="battle-monster-name">Монстр</h3>
         <div class="battle-arena">
             <div class="monster-side">
-                <div id="monster-img" class arena-img">👾</div>
+                <div id="monster-img" class="monster-img">👾</div>
                 <div class="monster-info">
                     <p>💪 <span id="m-str">0</span> | ❤️ <span id="m-hp">0</span> | 🛡️ <span id="m-arm">0</span></p>
                     <div class="hp-bar-container"><div id="m-hp-fill" class="hp-bar-fill"></div></div>
@@ -81,31 +116,26 @@
         </div>
     </div>
 
+    <!-- ЭКРАНЫ НАГРАД / ПОРАЖЕНИЯ -->
     <div id="screen-victory" class="screen">
-        <h2 id="victory-text">Вы победили!</h2>
+        <h2>Победа!</h2>
         <div class="reward-list">
-            <p>💰 Золото: <span id="r-gold">0</span></p>
-            <p>✨ Опыт: <span id="r-exp">0</span></p>
-            <p>💎 Мифрил: <span id="r-mythril">0</span></p>
+            <p>💰 <span id="r-gold">0</span> | ✨ <span id="r-exp">0</span> | 💎 <span id="r-mythril">0</span></p>
         </div>
         <button class="btn-main" onclick="showScreen('screen-main')">На главный экран</button>
     </div>
 
     <div id="screen-defeat" class="screen">
-        <h2 id="defeat-location">Локация</h2>
-        <p class="defeat-text">Вы отступили. Возвращайтесь, когда станете сильнее.</p>
-        <div id="defeat-monster-img" class="monster-img" style="margin: 20px auto;">👾</div>
-        <div class="reward-section">
-            <p>Награда:</p>
-            <button class="btn-main" onclick="claimDefeatReward()">Забрать награду</button>
-        </div>
+        <h2 id="defeat-location">Поражение</h2>
+        <p class="defeat-text">Вы отступили...</p>
+        <button class="btn-main" onclick="claimDefeatReward()">Забрать награду</button>
     </div>
 
-    <!-- Заглушки -->
+    <!-- ЗАГЛУШКИ -->
     <div id="screen-shop" class="screen"><h2>Магазин</h2><button class="btn-back" onclick="showScreen('screen-main')">Назад</button></div>
+    <div id="screen-hero" class="screen"><h2>Герой</h2><button class="btn-back" onclick="showScreen('screen-main')">Назад</button></div>
     <div id="screen-quests" class="screen"><h2>Задания</h2><button class="btn-back" onclick="showScreen('screen-main')">Назад</button></div>
-    <div id="screen-hero" class="screen"><h2>Личный кабинет</h2><button class="btn-back" onclick="showScreen('screen-main')">Назад</button></div>
-    <div id="screen-clan" class="screen"><h2>Ваш Клан</h2><button class="btn-back" onclick="showScreen('screen-main')">Назад</button></div>
+    <div id="screen-clan" class="screen"><h2>Клан</h2><button class="btn-back" onclick="showScreen('screen-main')">Назад</button></div>
 
     <div class="currency-bar">
         <span class="gold">🪙 <span id="val-gold">0</span></span>
@@ -114,6 +144,8 @@
     </div>
 </div>
 
-<script src="script.js"></script>
+<script src="data.js"></script>
+<script src="logic.js"></script>
+<script src="ui.js"></script>
 </body>
 </html>

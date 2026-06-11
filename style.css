@@ -9,24 +9,86 @@
 }
 
 body { background-color: var(--bg-color); color: var(--text-color); font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; justify-content: center; }
-#game-container { width: 100%; max-width: 450px; height: 100vh; background: var(--panel-color); display: flex; flex-direction: column; position: relative; overflow-y: auto; }
+#game-container { width: 100%; max-width: 450px; height: 100vh; background: var(--panel-color); display: flex; flex-direction: column; position: relative; overflow: hidden; }
 .header-stats { display: flex; justify-content: space-around; padding: 15px; background: #000; border-bottom: 2px solid var(--accent-color); font-weight: bold; }
-.screen { display: none; padding: 20px; flex-grow: 1; text-align: center; }
+.screen { display: none; padding: 20px; flex-grow: 1; text-align: center; overflow-y: auto; }
 .active { display: block; }
-.btn-main { width: 90%; margin: 10px auto; padding: 15px; font-size: 18px; font-weight: bold; background: var(--btn-color); color: white; border: 1px solid var(--accent-color); cursor: pointer; border-radius: 8px; }
-.btn-attack { width: 80%; padding: 15px; font-size: 20px; background: #c0392b; color: white; border: none; border-radius: 50px; cursor: pointer; margin: 10px auto; display: block; }
-.btn-back { padding: 10px 20px; background: #555; color: white; border: none; cursor: pointer; }
-.spacer { height: 20px; }
-.nav-bottom { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
-.shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.shop-btn { padding: 10px; background: #2c2c2c; color: #fff; border: 1px solid #555; cursor: pointer; }
+.btn-main { width: 100%; margin: 10px 0; padding: 15px; font-size: 18px; font-weight: bold; background: var(--btn-color); color: white; border: 1px solid var(--accent-color); cursor: pointer; border-radius: 12px; }
+.btn-attack { width: 85%; padding: 18px; font-size: 20px; background: #c0392b; color: white; border: none; border-radius: 50px; cursor: pointer; margin: 10px auto; display: block; }
+
+/* НОВАЯ КНОПКА 10 УДАРОВ */
+.btn-fast-attack { width: 85%; padding: 12px; font-size: 16px; font-weight: bold; background: #f39c12; color: white; border: none; border-radius: 50px; cursor: pointer; margin: 5px auto; display: block; box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3); }
+
+.btn-back { padding: 10px 25px; background: #555; color: white; border: none; border-radius: 8px; cursor: pointer; }
+.spacer { height: 15px; }
+.nav-bottom { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+.nav-bottom button { background: none; border: 1px solid #555; color: #aaa; padding: 5px 10px; border-radius: 15px; font-size: 0.8em; }
 .currency-bar { padding: 15px; background: #000; display: flex; justify-content: space-around; font-size: 14px; border-top: 1px solid #333; }
 .gold { color: #ffd700; } .silver { color: #c0c0c0; } .diamond { color: #b9f2ff; }
 .battle-arena { display: flex; flex-direction: column; gap: 15px; }
-.monster-side, .hero-side { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; }
-.monster-img, .hero-img { font-size: 50px; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; }
+.monster-side, .hero-side { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; }
+.monster-img, .hero-img { font-size: 55px; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; }
 .monster-info, .hero-info { text-align: left; width: 65%; }
-.hp-bar-container { width: 100%; height: 12px; background: #444; border-radius: 6px; overflow: hidden; margin-top: 5px; }
-.hp-bar-fill { height: 100%; width: 100%; background: var(--hp-color); transition: width 0.2s ease; }
-.defeat-text { color: #e74c3c; font-size: 1.2em; margin: 20px 0; }
-.reward-section { border-top: 1px solid #444; padding-top: 20px; }
+.hp-bar-container { width: 100%; height: 14px; background: #333; border-radius: 7px; overflow: hidden; margin-top: 8px; }
+.hp-bar-fill { height: 100%; width: 100%; background: var(--hp-color); transition: width 0.3s ease; }
+.defeat-text { color: #e74c3c; font-size: 1.4em; margin: 20px 0; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.screen.active { animation: fadeIn 0.3s ease-in; }
+
+/* Стили для игровых попапов */
+.game-popup {
+    display: none;
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.popup-content {
+    background: var(--panel-color);
+    border: 2px solid var(--accent-color);
+    padding: 30px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+    box-shadow: 0 0 30px var(--accent-color);
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.popup-title { font-size: 2.5em; margin: 0; }
+.popup-title.win { color: var(--hp-color); text-shadow: 0 0 10px var(--hp-color); }
+.popup-title.lose { color: var(--attack-color); text-shadow: 0 0 10px var(--attack-color); }
+
+.popup-rewards {
+    margin: 20px 0;
+    padding: 10px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+/* Кнопка выхода из арены (внутри боя) */
+.btn-exit-battle {
+    margin-top: 10px;
+    padding: 5px 15px;
+    background: #444;
+    color: #ccc;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Стили для кнопок выбора в попапе */
+.popup-content button {
+    margin: 5px 0;
+}
