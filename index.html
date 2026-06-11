@@ -9,18 +9,16 @@
 <body>
 
 <div id="game-container">
-    <!-- ВЕРХНЯЯ ПАНЕЛЬ -->
     <div class="header-stats">
         <span>💪 <span id="val-str">1</span></span>
         <span>❤️ <span id="val-hp">1</span></span>
         <span>🛡️ <span id="val-arm">1</span></span>
     </div>
 
-    <!-- ГЛАВНЫЙ ЭКРАН -->
     <div id="screen-main" class="screen active">
         <button class="btn-main" onclick="startBattle()">⚔️ БИТВА С БОССАМИ</button>
         <div class="spacer"></div>
-        <button class="btn-main" onclick="startArena()">🏟️ АРЕНА (15 БОЕВ)</button>
+        <button class="btn-main" onclick="startArena()">🏟️ АРЕНА</button>
         <div class="spacer"></div>
         <button class="btn-main" onclick="showScreen('screen-quests')">📜 ЗАДАНИЯ</button>
         <button class="btn-main" onclick="alert('Магазин скоро будет!')">💰 КУПИТЬ ЗОЛОТО</button>
@@ -36,7 +34,6 @@
         </div>
     </div>
 
-    <!-- ЭКРАН АРЕНЫ -->
     <div id="screen-arena" class="screen">
         <h2 id="arena-wave-text">Волна: 1/15</h2>
         <div class="battle-arena">
@@ -61,13 +58,12 @@
         <button class="btn-back" onclick="exitArena()" style="margin-top:20px;">Покинуть Арену</button>
     </div>
 
-    <!-- ЭКРАН БОЯ -->
     <div id="screen-battle" class="screen">
         <h2 id="battle-location">Локация</h2>
         <h3 id="battle-monster-name">Монстр</h3>
         <div class="battle-arena">
             <div class="monster-side">
-                <div id="monster-img" class="monster-img">👾</div>
+                <div id="monster-img" class arena-img">👾</div>
                 <div class="monster-info">
                     <p>💪 <span id="m-str">0</span> | ❤️ <span id="m-hp">0</span> | 🛡️ <span id="m-arm">0</span></p>
                     <div class="hp-bar-container"><div id="m-hp-fill" class="hp-bar-fill"></div></div>
@@ -85,7 +81,6 @@
         </div>
     </div>
 
-    <!-- ЭКРАН ПОБЕДЫ -->
     <div id="screen-victory" class="screen">
         <h2 id="victory-text">Вы победили!</h2>
         <div class="reward-list">
@@ -96,7 +91,6 @@
         <button class="btn-main" onclick="showScreen('screen-main')">На главный экран</button>
     </div>
 
-    <!-- ЭКРАН ПОРАЖЕНИЯ -->
     <div id="screen-defeat" class="screen">
         <h2 id="defeat-location">Локация</h2>
         <p class="defeat-text">Вы отступили. Возвращайтесь, когда станете сильнее.</p>
@@ -107,13 +101,12 @@
         </div>
     </div>
 
-    <!-- МАГАЗИН, ГЕРОЙ, КЛАН, ЗАДАНИЯ (Заглушки) -->
+    <!-- Заглушки -->
     <div id="screen-shop" class="screen"><h2>Магазин</h2><button class="btn-back" onclick="showScreen('screen-main')">Назад</button></div>
     <div id="screen-quests" class="screen"><h2>Задания</h2><button class="btn-back" onclick="showScreen('screen-main')">Назад</button></div>
     <div id="screen-hero" class="screen"><h2>Личный кабинет</h2><button class="btn-back" onclick="showScreen('screen-main')">Назад</button></div>
     <div id="screen-clan" class="screen"><h2>Ваш Клан</h2><button class="btn-back" onclick="showScreen('screen-main')">Назад</button></div>
 
-    <!-- НИЖНЯЯ ПАНЕЛЬ -->
     <div class="currency-bar">
         <span class="gold">🪙 <span id="val-gold">0</span></span>
         <span class="silver">🥈 <span id="val-silver">0</span></span>

@@ -86,16 +86,9 @@ const monsterDatabase = [
 // --- СОСТОЯНИЕ ИГРЫ ---
 let player = {
     name: "Герой",
-    str: 1,
-    hp: 1,
-    maxHp: 1,
-    arm: 1,
-    gold: 0,
-    silver: 0,
-    diamond: 0,
-    exp: 0,
-    mythril: 0,
-    bravery: 0,
+    str: 1, hp: 1, maxHp: 1, arm: 1,
+    gold: 0, silver: 0, diamond: 0,
+    exp: 0, mythril: 0, bravery: 0,
     monsterIndex: 0,
     titanLevel: 1,
     isTitanBattle: false,
@@ -127,8 +120,7 @@ function resetGame() {
     }
 }
 
-// --- ЛОГИКА БОЯ ---
-
+// --- ФУНКЦИИ ЭКРАНОВ ---
 function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -144,14 +136,11 @@ function updateUI() {
 }
 
 function train() {
-    player.str += 15;
-    player.hp += 30;
-    player.maxHp += 30;
-    player.arm += 15;
-    updateUI();
-    saveGame();
+    player.str += 15; player.hp += 30; player.maxHp += 30; player.arm += 15;
+    updateUI(); saveGame();
 }
 
+// --- БОЙ (ГЛАВНЫЙ) ---
 function startBattle() {
     if (player.monsterIndex >= monsterDatabase.length) {
         player.isTitanBattle = true;
@@ -170,7 +159,6 @@ function startBattle() {
 
 function prepareTitanBattle() {
     const lvl = player.titanLevel;
-    // БЕСКОНЕЧНАЯ ФОРМУЛА ТИТАНА
     currentBattleMonster = {
         name: `Бессмертный Титан (Ур. ${lvl})`,
         str: 6500 + (lvl - 1) * 600,
@@ -192,7 +180,6 @@ function updateBattleUI() {
     document.getElementById('m-hp').innerText = Math.ceil(m.currentHp);
     document.getElementById('m-arm').innerText = m.arm;
     document.getElementById('m-hp-fill').style.width = `${(m.currentHp / m.hp) * 100}%`;
-
     document.getElementById('h-str').innerText = player.str;
     document.getElementById('h-hp').innerText = Math.ceil(player.currentHp);
     document.getElementById('h-arm').innerText = player.arm;
@@ -202,7 +189,6 @@ function updateBattleUI() {
 function performAttack() {
     let pDamage = Math.max(10, player.str - currentBattleMonster.arm);
     if (currentBattleMonster.name.includes("Дракон")) pDamage = 8893;
-
     currentBattleMonster.currentHp -= pDamage;
 
     if (currentBattleMonster.currentHp > 0) {
@@ -210,9 +196,7 @@ function performAttack() {
         if (currentBattleMonster.name.includes("Дракон")) mDamage = 2303;
         player.currentHp -= mDamage;
     }
-
     updateBattleUI();
-
     if (player.currentHp <= 0) endBattle(false);
     else if (currentBattleMonster.currentHp <= 0) endBattle(true);
 }
@@ -230,12 +214,8 @@ function endBattle(isVictory) {
             let goldEarned = m.chapter >= 13 ? 100 : (1 + Math.floor(player.monsterIndex * 0.5));
             let expEarned = calculateExp(player.monsterIndex);
             let mythrilEarned = m.chapter >= 13 ? 1 : 0;
-
-            player.gold += goldEarned;
-            player.exp += expEarned;
-            player.mythril += mythrilEarned;
+            player.gold += goldEarned; player.exp += expEarned; player.mythril += mythrilEarned;
             player.monsterIndex++;
-
             document.getElementById('r-gold').innerText = goldEarned;
             document.getElementById('r-exp').innerText = expEarned;
             document.getElementById('r-mythril').innerText = mythrilEarned;
@@ -253,7 +233,6 @@ function calculateExp(index) {
 }
 
 // --- АРЕНА ---
-
 function startArena() {
     arenaWave = 1;
     player.isArenaMode = true;
@@ -262,17 +241,33 @@ function startArena() {
 
 function startNextArenaWave() {
     if (arenaWave > maxArenaWaves) {
-        alert("Арена завершена!");
+        // Награда после 15 волн
+        let bigGold = 500; // Пример награды
+        let bigExp = 2000;
+        player.gold += bigGold;
+        player.exp += bigExp;
+        alert(`Арена завершена! Вы получили ${bigGold} золота и ${bigExp} опыта!`);
         player.isArenaMode = false;
+        saveGame();
         showScreen('screen-main');
+        updateUI();
         return;
     }
 
-    const baseMonster = monsterDatabase[Math.floor(Math.random() * monsterDatabase.length)];
+    // ВАЖНО: Выбираем только из тех монстров, которых игрок УЖЕ прошел в боссах
+    // Если monsterIndex = 5, значит доступны монстры с 0 по 4.
+    let availableMonsters = monsterDatabase.slice(0, player.monsterIndex);
+    
+    // Если игрок еще ничего не прошел, даем ему первого лесного волка
+    if (availableMonsters.length === 0) {
+        availableMonsters = [monsterDatabase[0]];
+    }
+
+    const baseMonster = availableMonsters[Math.floor(Math.random() * availableMonsters.length)];
     const diff = 1 + (arenaWave * 0.2);
 
     currentBattleMonster = {
-        name: baseMonster.name + (arenaWave % 5 === 0 ? " (БОСС)" : ""),
+        name: baseMonster.name + (arenaWave % 5 === 0 ? " (БОСС АРЕНЫ)" : ""),
         str: Math.floor(baseMonster.str * diff),
         hp: Math.floor(baseMonster.hp * diff),
         arm: Math.floor(baseMonster.arm * diff),
@@ -293,7 +288,6 @@ function updateArenaUI() {
     document.getElementById('arena-m-hp').innerText = Math.ceil(m.currentHp);
     document.getElementById('arena-m-arm').innerText = m.arm;
     document.getElementById('arena-m-hp-fill').style.width = `${(m.currentHp / m.hp) * 100}%`;
-
     document.getElementById('arena-h-str').innerText = player.str;
     document.getElementById('arena-h-hp').innerText = Math.ceil(arenaPlayerHp);
     document.getElementById('arena-h-arm').innerText = player.arm;
@@ -303,22 +297,21 @@ function updateArenaUI() {
 function arenaAttack() {
     let pDamage = Math.max(10, player.str - currentBattleMonster.arm);
     currentBattleMonster.currentHp -= pDamage;
-
     if (currentBattleMonster.currentHp > 0) {
         let mDamage = Math.max(5, currentBattleMonster.str - player.arm);
         arenaPlayerHp -= mDamage;
     }
-
     updateArenaUI();
 
     if (arenaPlayerHp <= 0) {
         alert("Вы проиграли на Арене!");
         player.isArenaMode = false;
         showScreen('screen-main');
+        saveGame();
     } else if (currentBattleMonster.currentHp <= 0) {
+        // Награда за волну
         let silverBase = currentBattleMonster.isBoss ? 100 : 50;
         let expBase = currentBattleMonster.isBoss ? 100 : 50;
-        
         let silverEarned = Math.floor(silverBase * (1 + (arenaWave * 0.1)));
         let expEarned = Math.floor(expBase * (1 + (arenaWave * 0.1)));
 
@@ -331,8 +324,10 @@ function arenaAttack() {
 }
 
 function exitArena() {
-    player.isArenaMode = false;
-    showScreen('screen-main');
+    if (confirm("Выйти с арены?")) {
+        player.isArenaMode = false;
+        showScreen('screen-main');
+    }
 }
 
 function claimDefeatReward() {
@@ -343,6 +338,5 @@ function claimDefeatReward() {
     updateUI();
 }
 
-// Запуск
 loadGame();
 updateUI();
