@@ -80,7 +80,7 @@ const monsterDatabase = [
     { name: "Магма Великаны", str: 6000, hp: 75000, arm: 7400, chapter: 20 },
     { name: "Великан Сурт", str: 6200, hp: 78000, arm: 7500, chapter: 20 },
     { name: "Хель", str: 6400, hp: 80000, arm: 7500, chapter: 20 },
-    { name: "Бессмертный Титан", str: 6500, hp: 80000, arm: 7500, chapter: 999 } // Спец. флаг
+    { name: "Бессмертный Титан", str: 6500, hp: 80000, arm: 7500, chapter: 999 }
 ];
 
 // --- СОСТОЯНИЕ ИГРЫ ---
@@ -91,6 +91,8 @@ let player = {
     maxHp: 1,
     arm: 1,
     gold: 0,
+    silver: 0,
+    diamond: 0,
     exp: 0,
     mythril: 0,
     bravery: 0,
@@ -101,6 +103,9 @@ let player = {
 };
 
 let currentBattleMonster = null;
+let arenaWave = 1;
+let arenaPlayerHp = 0;
+const maxArenaWaves = 15;
 
 // --- СИСТЕМА СОХРАНЕНИЯ ---
 function saveGame() {
@@ -122,14 +127,36 @@ function resetGame() {
     }
 }
 
-// --- БОЕВЫЕ ФУНКЦИИ ---
+// --- ЛОГИКА БОЯ ---
+
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+function updateUI() {
+    document.getElementById('val-str').innerText = player.str;
+    document.getElementById('val-hp').innerText = Math.ceil(player.hp);
+    document.getElementById('val-arm').innerText = player.arm;
+    document.getElementById('val-gold').innerText = player.gold;
+    document.getElementById('val-silver').innerText = player.silver;
+    document.getElementById('val-diamond').innerText = player.diamond;
+}
+
+function train() {
+    player.str += 15;
+    player.hp += 30;
+    player.maxHp += 30;
+    player.arm += 15;
+    updateUI();
+    saveGame();
+}
 
 function startBattle() {
-    // Если обычные монстры кончились, начинаем бесконечного Титана
     if (player.monsterIndex >= monsterDatabase.length) {
         player.isTitanBattle = true;
     }
-    
+
     if (player.isTitanBattle) {
         prepareTitanBattle();
     } else {
@@ -142,16 +169,15 @@ function startBattle() {
 }
 
 function prepareTitanBattle() {
-    // Математика бесконечного Титана
-    // Формула: Базовое значение + (уровень * множитель)
     const lvl = player.titanLevel;
+    // БЕСКОНЕЧНАЯ ФОРМУЛА ТИТАНА
     currentBattleMonster = {
         name: `Бессмертный Титан (Ур. ${lvl})`,
-        str: 6500 + (lvl - 1) * 500,
-        hp: 80000 + (lvl - 1) * 5000,
-        arm: 7500 + (lvl - 1) * 250,
+        str: 6500 + (lvl - 1) * 600,
+        hp: 80000 + (lvl - 1) * 7000,
+        arm: 7500 + (lvl - 1) * 300,
         chapter: 999,
-        currentHp: 80000 + (lvl - 1) * 5000
+        currentHp: 80000 + (lvl - 1) * 7000
     };
     player.currentHp = player.hp;
     showScreen('screen-battle');
@@ -160,13 +186,13 @@ function prepareTitanBattle() {
 
 function updateBattleUI() {
     const m = currentBattleMonster;
-    document.getElementById('battle-location').innerText = m.chapter === 999 ? "Бездны" : `Глава ${m.chapter}`;
+    document.getElementById('battle-location').innerText = m.chapter === 999 ? "Бездна" : `Глава ${m.chapter}`;
     document.getElementById('battle-monster-name').innerText = m.name;
     document.getElementById('m-str').innerText = m.str;
     document.getElementById('m-hp').innerText = Math.ceil(m.currentHp);
     document.getElementById('m-arm').innerText = m.arm;
     document.getElementById('m-hp-fill').style.width = `${(m.currentHp / m.hp) * 100}%`;
-    
+
     document.getElementById('h-str').innerText = player.str;
     document.getElementById('h-hp').innerText = Math.ceil(player.currentHp);
     document.getElementById('h-arm').innerText = player.arm;
@@ -174,17 +200,15 @@ function updateBattleUI() {
 }
 
 function performAttack() {
-    // Урон игрока
-    let playerDamage = Math.max(10, player.str - currentBattleMonster.arm);
-    if (currentBattleMonster.name.includes("Дракон")) playerDamage = 8893; // Тестовый урон
+    let pDamage = Math.max(10, player.str - currentBattleMonster.arm);
+    if (currentBattleMonster.name.includes("Дракон")) pDamage = 8893;
 
-    currentBattleMonster.currentHp -= playerDamage;
+    currentBattleMonster.currentHp -= pDamage;
 
-    // Ответ монстра
     if (currentBattleMonster.currentHp > 0) {
-        let monsterDamage = Math.max(5, currentBattleMonster.str - player.arm);
-        if (currentBattleMonster.name.includes("Дракон")) monsterDamage = 2303; // Тестовый урон
-        player.currentHp -= monsterDamage;
+        let mDamage = Math.max(5, currentBattleMonster.str - player.arm);
+        if (currentBattleMonster.name.includes("Дракон")) mDamage = 2303;
+        player.currentHp -= mDamage;
     }
 
     updateBattleUI();
@@ -196,18 +220,14 @@ function performAttack() {
 function endBattle(isVictory) {
     if (isVictory) {
         if (player.isTitanBattle) {
-            // --- ПОБЕДА НАД ТИТАНОМ ---
             player.titanLevel++;
-            player.str += 500; // Трофей: сила
+            player.str += 500;
             player.mythril += 1;
-            alert(`Вы убили Титана! Он перерождается на уровень ${player.titanLevel}`);
+            alert(`Титан повержен! Он перерождается на уровень ${player.titanLevel}!`);
             prepareTitanBattle();
         } else {
-            // --- ПОБЕДА НАД ОБЫЧНЫМ МОНСТРОМ ---
             const m = currentBattleMonster;
-            let goldEarned = 1 + Math.floor(player.monsterIndex * 0.5);
-            if (m.chapter >= 13) goldEarned = 100;
-
+            let goldEarned = m.chapter >= 13 ? 100 : (1 + Math.floor(player.monsterIndex * 0.5));
             let expEarned = calculateExp(player.monsterIndex);
             let mythrilEarned = m.chapter >= 13 ? 1 : 0;
 
@@ -232,6 +252,89 @@ function calculateExp(index) {
     return seq[index] || (4000 * Math.pow(2, index - 4));
 }
 
+// --- АРЕНА ---
+
+function startArena() {
+    arenaWave = 1;
+    player.isArenaMode = true;
+    startNextArenaWave();
+}
+
+function startNextArenaWave() {
+    if (arenaWave > maxArenaWaves) {
+        alert("Арена завершена!");
+        player.isArenaMode = false;
+        showScreen('screen-main');
+        return;
+    }
+
+    const baseMonster = monsterDatabase[Math.floor(Math.random() * monsterDatabase.length)];
+    const diff = 1 + (arenaWave * 0.2);
+
+    currentBattleMonster = {
+        name: baseMonster.name + (arenaWave % 5 === 0 ? " (БОСС)" : ""),
+        str: Math.floor(baseMonster.str * diff),
+        hp: Math.floor(baseMonster.hp * diff),
+        arm: Math.floor(baseMonster.arm * diff),
+        currentHp: Math.floor(baseMonster.hp * diff),
+        isBoss: (arenaWave % 5 === 0)
+    };
+
+    arenaPlayerHp = player.hp;
+    document.getElementById('arena-wave-text').innerText = `Волна: ${arenaWave}/15`;
+    showScreen('screen-arena');
+    updateArenaUI();
+}
+
+function updateArenaUI() {
+    const m = currentBattleMonster;
+    document.getElementById('arena-m-name').innerText = m.name;
+    document.getElementById('arena-m-str').innerText = m.str;
+    document.getElementById('arena-m-hp').innerText = Math.ceil(m.currentHp);
+    document.getElementById('arena-m-arm').innerText = m.arm;
+    document.getElementById('arena-m-hp-fill').style.width = `${(m.currentHp / m.hp) * 100}%`;
+
+    document.getElementById('arena-h-str').innerText = player.str;
+    document.getElementById('arena-h-hp').innerText = Math.ceil(arenaPlayerHp);
+    document.getElementById('arena-h-arm').innerText = player.arm;
+    document.getElementById('arena-h-hp-fill').style.width = `${(arenaPlayerHp / player.hp) * 100}%`;
+}
+
+function arenaAttack() {
+    let pDamage = Math.max(10, player.str - currentBattleMonster.arm);
+    currentBattleMonster.currentHp -= pDamage;
+
+    if (currentBattleMonster.currentHp > 0) {
+        let mDamage = Math.max(5, currentBattleMonster.str - player.arm);
+        arenaPlayerHp -= mDamage;
+    }
+
+    updateArenaUI();
+
+    if (arenaPlayerHp <= 0) {
+        alert("Вы проиграли на Арене!");
+        player.isArenaMode = false;
+        showScreen('screen-main');
+    } else if (currentBattleMonster.currentHp <= 0) {
+        let silverBase = currentBattleMonster.isBoss ? 100 : 50;
+        let expBase = currentBattleMonster.isBoss ? 100 : 50;
+        
+        let silverEarned = Math.floor(silverBase * (1 + (arenaWave * 0.1)));
+        let expEarned = Math.floor(expBase * (1 + (arenaWave * 0.1)));
+
+        player.silver += silverEarned;
+        player.exp += expEarned;
+        arenaWave++;
+        saveGame();
+        startNextArenaWave();
+    }
+}
+
+function exitArena() {
+    player.isArenaMode = false;
+    showScreen('screen-main');
+}
+
 function claimDefeatReward() {
     player.exp += calculateExp(player.monsterIndex);
     player.currentHp = player.hp;
@@ -240,30 +343,6 @@ function claimDefeatReward() {
     updateUI();
 }
 
-// --- ПРОЧЕЕ ---
-function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-}
-
-function train() {
-    player.str += 20;
-    player.hp += 40;
-    player.maxHp += 40;
-    player.arm += 20;
-    updateUI();
-    saveGame();
-}
-
-function updateUI() {
-    document.getElementById('val-str').innerText = player.str;
-    document.getElementById('val-hp').innerText = Math.ceil(player.hp);
-    document.getElementById('val-arm').innerText = player.arm;
-    document.getElementById('val-gold').innerText = player.gold;
-    document.getElementById('val-silver').innerText = 0;
-    document.getElementById('val-diamond').innerText = 0;
-}
-
-// ЗАПУСК
+// Запуск
 loadGame();
 updateUI();
